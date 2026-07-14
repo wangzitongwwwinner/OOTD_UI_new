@@ -15,6 +15,7 @@ export interface Scene {
   temperature: number; // estimated temperature in celsius
   feel: "偏冷" | "舒适" | "闷热" | "微凉";
   isPreset: boolean;
+  remark?: string;
 }
 
 export interface ItineraryItem {

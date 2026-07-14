@@ -153,7 +153,7 @@ export default function HomeView({
         <div className="bg-white rounded-3xl border border-gray-100 p-6 shadow-soft flex flex-col relative overflow-hidden">
           {/* City selector dropdown */}
           <div className="flex justify-between items-center z-10">
-            <div className="relative inline-block">
+            <div className="relative inline-flex items-center">
               <select
                 id="city_selector"
                 value={selectedCity}
@@ -166,7 +166,7 @@ export default function HomeView({
                   </option>
                 ))}
               </select>
-              <span className="material-symbols-outlined text-xs absolute right-3 top-2.5 text-gray-500 pointer-events-none">
+              <span className="material-symbols-outlined text-xs absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none">
                 expand_more
               </span>
             </div>
@@ -291,23 +291,6 @@ export default function HomeView({
               </div>
             </div>
 
-            {/* Generic item links */}
-            <div className="mt-5 border-t border-gray-100 pt-4 flex flex-col">
-              <span className="text-[10px] font-semibold text-[#685c50] uppercase tracking-wider">
-                推荐拥有的衣物材质
-              </span>
-              <div className="flex flex-wrap gap-1.5 mt-2">
-                {recommendation.suggestedItems.map((item, idx) => (
-                  <span
-                    key={idx}
-                    onClick={() => onTabChange("tryon")}
-                    className="text-[10px] font-medium text-gray-600 bg-gray-100 border border-gray-200 px-3 py-1 rounded-full cursor-pointer hover:bg-black hover:text-white transition-all"
-                  >
-                    {item}
-                  </span>
-                ))}
-              </div>
-            </div>
 
             {/* Regenerate Trigger */}
             <button
@@ -361,7 +344,14 @@ export default function HomeView({
                       <div className="h-8 w-[1px] bg-gray-200" />
 
                       <div className="flex flex-col">
-                        <span className="text-sm font-bold text-gray-800">{scene?.name || "自定义行程"}</span>
+                        <div className="flex items-center space-x-1.5">
+                          <span className="text-sm font-bold text-gray-800">{scene?.name || "自定义行程"}</span>
+                          {scene?.remark && (
+                            <span className="text-[9px] font-bold text-[#685c50] bg-[#f0e0d0]/50 px-1.5 py-0.5 rounded-full">
+                              {scene.remark}
+                            </span>
+                          )}
+                        </div>
                         <div className="flex items-center space-x-1.5 mt-1">
                           <span className="text-[10px] font-medium text-gray-400">预估环境:</span>
                           <span className="text-[10px] font-bold text-gray-700">{it.temperature}°C</span>

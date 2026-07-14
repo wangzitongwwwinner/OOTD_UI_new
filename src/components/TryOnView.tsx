@@ -553,29 +553,48 @@ export default function TryOnView({ clothingList, savedOutfits, onSaveOutfit, on
                     className="bg-white rounded-3xl border border-gray-100 p-4 shadow-soft flex space-x-4 relative group hover:border-black transition-all"
                   >
                     {/* Compact preview graphic */}
-                    <div className="w-24 aspect-[3/4] bg-gray-50 border border-gray-100 rounded-2xl relative overflow-hidden flex items-center justify-center shrink-0">
-                      {outfit.canvasItems.map((item, index) => {
-                        const clothing = clothingList.find((c) => c.id === item.clothingId);
-                        if (!clothing) return null;
-                        return (
-                          <img
-                            key={item.id}
-                            src={clothing.image}
-                            alt="garment preview"
-                            referrerPolicy="no-referrer"
-                            style={{
-                              position: "absolute",
-                              left: `${item.x}%`,
-                              top: `${item.y}%`,
-                              width: "35px",
-                              height: "35px",
-                              transform: `translate(-50%, -50%) scale(${item.scale * 0.7})`,
-                              zIndex: item.zIndex,
-                            }}
-                            className="object-contain"
-                          />
-                        );
-                      })}
+                    <div className="w-24 aspect-[3/4] bg-gray-50 border border-gray-100 rounded-2xl relative overflow-hidden flex items-center justify-center shrink-0 animate-[fadeIn_0.3s_ease-out]">
+                      {(() => {
+                        const xs = outfit.canvasItems.map((it) => it.x);
+                        const ys = outfit.canvasItems.map((it) => it.y);
+                        const minX = xs.length > 0 ? Math.min(...xs) : 50;
+                        const maxX = xs.length > 0 ? Math.max(...xs) : 50;
+                        const minY = ys.length > 0 ? Math.min(...ys) : 50;
+                        const maxY = ys.length > 0 ? Math.max(...ys) : 50;
+
+                        const centerX = xs.length > 0 ? (minX + maxX) / 2 : 50;
+                        const centerY = ys.length > 0 ? (minY + maxY) / 2 : 50;
+
+                        const spanX = maxX - minX;
+                        const spanY = maxY - minY;
+                        const maxSpan = Math.max(spanX, spanY);
+
+                        // Calculate optimal zoom to maximize display without cropping out edges too aggressively
+                        const zoom = Math.max(1.3, Math.min(2.4, 75 / (maxSpan || 40)));
+
+                        return outfit.canvasItems.map((item) => {
+                          const clothing = clothingList.find((c) => c.id === item.clothingId);
+                          if (!clothing) return null;
+                          return (
+                            <img
+                              key={item.id}
+                              src={clothing.image}
+                              alt="garment preview"
+                              referrerPolicy="no-referrer"
+                              style={{
+                                position: "absolute",
+                                left: `${50 + (item.x - centerX) * zoom}%`,
+                                top: `${50 + (item.y - centerY) * zoom}%`,
+                                width: "48px",
+                                height: "48px",
+                                transform: `translate(-50%, -50%) scale(${item.scale * zoom * 0.95})`,
+                                zIndex: item.zIndex,
+                              }}
+                              className="object-contain"
+                            />
+                          );
+                        });
+                      })()}
                     </div>
 
                     {/* Outfit description & Actions */}

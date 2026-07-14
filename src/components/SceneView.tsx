@@ -17,6 +17,7 @@ export default function SceneView({ scenes, onAddScene, onUpdateScene, onDeleteS
   const [category, setCategory] = useState<SceneCategory>("自定义");
   const [temperature, setTemperature] = useState(22);
   const [feel, setFeel] = useState<"偏冷" | "舒适" | "闷热" | "微凉">("舒适");
+  const [remark, setRemark] = useState("");
 
   const openAddForm = () => {
     setEditingScene(null);
@@ -24,6 +25,7 @@ export default function SceneView({ scenes, onAddScene, onUpdateScene, onDeleteS
     setCategory("自定义");
     setTemperature(22);
     setFeel("舒适");
+    setRemark("");
     setShowForm(true);
   };
 
@@ -33,6 +35,7 @@ export default function SceneView({ scenes, onAddScene, onUpdateScene, onDeleteS
     setCategory(scene.category);
     setTemperature(scene.temperature);
     setFeel(scene.feel);
+    setRemark(scene.remark || "");
     setShowForm(true);
   };
 
@@ -47,6 +50,7 @@ export default function SceneView({ scenes, onAddScene, onUpdateScene, onDeleteS
         category,
         temperature,
         feel,
+        remark: remark.trim(),
       });
     } else {
       const newScene: Scene = {
@@ -55,6 +59,7 @@ export default function SceneView({ scenes, onAddScene, onUpdateScene, onDeleteS
         category,
         temperature,
         feel,
+        remark: remark.trim(),
         isPreset: false,
       };
       onAddScene(newScene);
@@ -109,9 +114,9 @@ export default function SceneView({ scenes, onAddScene, onUpdateScene, onDeleteS
               <div className="flex flex-col">
                 <div className="flex items-center space-x-2">
                   <span className="text-sm font-bold text-gray-900">{scene.name}</span>
-                  {scene.category === "地铁通勤" && (
-                    <span className="text-[9px] font-bold text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded-full uppercase tracking-wider">
-                      高频活动
+                  {scene.remark && (
+                    <span className="text-[9px] font-bold text-[#685c50] bg-[#f0e0d0]/50 px-1.5 py-0.5 rounded-full uppercase tracking-wider">
+                      {scene.remark}
                     </span>
                   )}
                 </div>
@@ -260,6 +265,19 @@ export default function SceneView({ scenes, onAddScene, onUpdateScene, onDeleteS
                     </button>
                   ))}
                 </div>
+              </div>
+
+              {/* Remark / Notes */}
+              <div className="flex flex-col space-y-1.5">
+                <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider">备注 (例如: 高频活动)</label>
+                <input
+                  type="text"
+                  placeholder="添加特征备注，如“高频活动”、“午休场景”"
+                  value={remark}
+                  onChange={(e) => setRemark(e.target.value)}
+                  maxLength={15}
+                  className="bg-gray-50 border border-gray-200 rounded-lg px-3 py-3 text-sm focus:outline-none focus:border-black"
+                />
               </div>
 
               {/* Submit Actions */}

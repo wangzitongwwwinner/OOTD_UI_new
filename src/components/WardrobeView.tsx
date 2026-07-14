@@ -5,9 +5,10 @@ interface WardrobeViewProps {
   clothingList: Clothing[];
   onAddClothing: (item: Clothing) => void;
   onDeleteClothing: (id: string) => void;
+  onUpdateClothing: (item: Clothing) => void;
 }
 
-export default function WardrobeView({ clothingList, onAddClothing, onDeleteClothing }: WardrobeViewProps) {
+export default function WardrobeView({ clothingList, onAddClothing, onDeleteClothing, onUpdateClothing }: WardrobeViewProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategoryTab, setSelectedCategoryTab] = useState<ClothingCategory | "全部">("全部");
   const [selectedColor, setSelectedColor] = useState<string>("全部");
@@ -21,6 +22,13 @@ export default function WardrobeView({ clothingList, onAddClothing, onDeleteClot
   const [isRemovingBg, setIsRemovingBg] = useState(false);
   const [bgRemovedConfirmed, setBgRemovedConfirmed] = useState(false);
 
+  // Edit Clothing States
+  const [editingItem, setEditingItem] = useState<Clothing | null>(null);
+  const [editName, setEditName] = useState("");
+  const [editCategory, setEditCategory] = useState<ClothingCategory>("上衣");
+  const [editColor, setEditColor] = useState("黑色");
+  const [editImageUrl, setEditImageUrl] = useState("");
+
   // Available colors filter
   const colors = ["全部", "白色", "黑色", "蓝色", "灰色", "绿色", "棕色", "卡其色", "米色"];
 
@@ -28,32 +36,32 @@ export default function WardrobeView({ clothingList, onAddClothing, onDeleteClot
   const presetApparelImages = [
     {
       name: "蓝色条纹衬衫",
-      url: "/input_file_0.png",
+      url: "https://images.unsplash.com/photo-1603252109303-2751441dd157?w=400&auto=format&fit=crop&q=80",
       color: "蓝色"
     },
     {
       name: "史努比短袖",
-      url: "/input_file_4.png",
+      url: "https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?w=400&auto=format&fit=crop&q=80",
       color: "白色"
     },
     {
       name: "军绿色短裤",
-      url: "/input_file_3.png",
+      url: "https://images.unsplash.com/photo-1591195853828-11db59a44f6b?w=400&auto=format&fit=crop&q=80",
       color: "绿色"
     },
     {
       name: "牛仔长裤",
-      url: "/input_file_2.png",
+      url: "https://images.unsplash.com/photo-1541099649105-f69ad21f3246?w=400&auto=format&fit=crop&q=80",
       color: "蓝色"
     },
     {
       name: "白色运动鞋",
-      url: "/input_file_1.png",
+      url: "https://images.unsplash.com/photo-1608231387042-66d1773070a5?w=400&auto=format&fit=crop&q=80",
       color: "白色"
     },
     {
       name: "卡其休闲短裤",
-      url: "/input_file_5.png",
+      url: "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=400&auto=format&fit=crop&q=80",
       color: "卡其色"
     }
   ];
@@ -92,6 +100,26 @@ export default function WardrobeView({ clothingList, onAddClothing, onDeleteClot
     setShowUploadForm(false);
     setUploadName("");
     setBgRemovedConfirmed(false);
+  };
+
+  const handleEditClick = (item: Clothing) => {
+    setEditingItem(item);
+    setEditName(item.name);
+    setEditCategory(item.category);
+    setEditColor(item.color);
+    setEditImageUrl(item.image);
+  };
+
+  const handleSaveEdit = () => {
+    if (!editingItem || !editName.trim()) return;
+    onUpdateClothing({
+      ...editingItem,
+      name: editName.trim(),
+      category: editCategory,
+      color: editColor,
+      image: editImageUrl,
+    });
+    setEditingItem(null);
   };
 
   return (
@@ -179,7 +207,8 @@ export default function WardrobeView({ clothingList, onAddClothing, onDeleteClot
             {filteredClothing.map((item) => (
               <div
                 key={item.id}
-                className="bg-white rounded-3xl border border-gray-100 p-3 shadow-soft flex flex-col group relative"
+                onClick={() => handleEditClick(item)}
+                className="bg-white rounded-3xl border border-gray-100 p-3 shadow-soft flex flex-col group relative cursor-pointer hover:border-gray-300 active:scale-98 transition-all"
               >
                 {/* Image Container */}
                 <div className="bg-[#faf9f7] rounded-2xl w-full aspect-square overflow-hidden border border-gray-100/50 flex items-center justify-center relative">
@@ -187,13 +216,16 @@ export default function WardrobeView({ clothingList, onAddClothing, onDeleteClot
                     src={item.image}
                     alt={item.name}
                     referrerPolicy="no-referrer"
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    className="w-full h-full object-contain p-2 group-hover:scale-105 transition-transform duration-500"
                   />
                   
                   {/* Delete hovering indicator */}
                   <button
-                    onClick={() => onDeleteClothing(item.id)}
-                    className="absolute top-2 right-2 w-8 h-8 rounded-full bg-white/80 hover:bg-red-50 hover:text-red-600 flex items-center justify-center text-gray-400 transition-all cursor-pointer shadow-sm"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onDeleteClothing(item.id);
+                    }}
+                    className="absolute top-2 right-2 w-8 h-8 rounded-full bg-white/80 hover:bg-red-50 hover:text-red-600 flex items-center justify-center text-gray-400 transition-all cursor-pointer shadow-sm z-10"
                   >
                     <span className="material-symbols-outlined text-sm">delete</span>
                   </button>
@@ -400,6 +432,135 @@ export default function WardrobeView({ clothingList, onAddClothing, onDeleteClot
                 </div>
               </div>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* Edit Clothing Drawer / Dialog */}
+      {editingItem && (
+        <div className="fixed inset-0 z-50 bg-black/60 flex items-end justify-center md:items-center p-0 md:p-6 animate-[fadeIn_0.2s_ease-out_forwards]">
+          <div className="w-full md:max-w-md bg-white rounded-t-3xl md:rounded-3xl p-6 shadow-2xl flex flex-col space-y-4 max-h-[90vh] overflow-y-auto animate-[slideUp_0.3s_ease-out_forwards]">
+            
+            <div className="flex justify-between items-center pb-2 border-b border-gray-100">
+              <h4 className="font-serif text-lg font-bold text-gray-900">
+                编辑衣物信息
+              </h4>
+              <button
+                onClick={() => setEditingItem(null)}
+                className="w-8 h-8 rounded-full hover:bg-gray-100 flex items-center justify-center text-gray-500 cursor-pointer"
+              >
+                <span className="material-symbols-outlined text-xl">close</span>
+              </button>
+            </div>
+
+            <div className="flex flex-col space-y-4 text-left">
+              {/* Image Preview and Picker */}
+              <div className="flex flex-col space-y-1.5">
+                <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider">衣服照片</label>
+                
+                {/* Active Image Preview */}
+                <div className="bg-[#faf9f7] rounded-2xl w-full h-40 overflow-hidden border border-gray-100 flex items-center justify-center relative p-3">
+                  <img
+                    src={editImageUrl}
+                    alt="Preview"
+                    referrerPolicy="no-referrer"
+                    className="max-h-full max-w-full object-contain"
+                  />
+                </div>
+
+                {/* Preset image options to click/choose */}
+                <span className="text-[11px] font-semibold text-gray-400 mt-1">选择白底衣服底片：</span>
+                <div className="flex space-x-2.5 overflow-x-auto py-1.5 scrollbar-hide">
+                  {presetApparelImages.map((img, idx) => (
+                    <button
+                      key={idx}
+                      type="button"
+                      onClick={() => {
+                        setEditImageUrl(img.url);
+                      }}
+                      className={`w-14 h-14 rounded-lg overflow-hidden border-2 shrink-0 bg-white p-1 transition-all ${
+                        editImageUrl === img.url ? "border-[#181512] scale-105 shadow-md" : "border-transparent opacity-60 hover:opacity-100"
+                      }`}
+                    >
+                      <img src={img.url} alt="Apparel preset" referrerPolicy="no-referrer" className="w-full h-full object-contain" />
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Enter garment name */}
+              <div className="flex flex-col space-y-1.5">
+                <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider">衣物名称</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="如：黑色轻薄防晒衫"
+                  value={editName}
+                  onChange={(e) => setEditName(e.target.value)}
+                  className="bg-gray-50 border border-gray-200 rounded-lg px-3 py-3 text-sm focus:outline-none focus:border-black font-medium"
+                />
+              </div>
+
+              {/* Clothing Category */}
+              <div className="flex flex-col space-y-1.5">
+                <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider">分类</label>
+                <div className="grid grid-cols-4 gap-2">
+                  {(["上衣", "下装", "鞋履", "配饰"] as const).map((cat) => (
+                    <button
+                      key={cat}
+                      type="button"
+                      onClick={() => setEditCategory(cat)}
+                      className={`py-2 rounded-lg text-xs font-semibold transition-all border ${
+                        editCategory === cat
+                          ? "bg-[#181512] text-white border-transparent"
+                          : "bg-gray-50 text-gray-600 border-gray-200 hover:bg-gray-100"
+                      }`}
+                    >
+                      {cat}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Clothing main color */}
+              <div className="flex flex-col space-y-1.5">
+                <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider">主色调</label>
+                <div className="relative">
+                  <select
+                    value={editColor}
+                    onChange={(e) => setEditColor(e.target.value)}
+                    className="w-full appearance-none bg-gray-50 border border-gray-200 rounded-lg px-3 py-3 text-sm focus:outline-none focus:border-black cursor-pointer font-medium"
+                  >
+                    {colors.filter(c => c !== "全部").map((col) => (
+                      <option key={col} value={col}>
+                        {col}
+                      </option>
+                    ))}
+                  </select>
+                  <span className="material-symbols-outlined text-gray-400 absolute right-3 top-3.5 pointer-events-none">
+                    expand_more
+                  </span>
+                </div>
+              </div>
+
+              {/* Save / Cancel buttons */}
+              <div className="flex space-x-3 pt-3">
+                <button
+                  type="button"
+                  onClick={() => setEditingItem(null)}
+                  className="flex-1 border border-gray-200 text-gray-600 rounded-full py-3.5 text-xs font-semibold hover:bg-gray-50 cursor-pointer"
+                >
+                  取消
+                </button>
+                <button
+                  type="button"
+                  onClick={handleSaveEdit}
+                  className="flex-1 bg-[#181512] text-white rounded-full py-3.5 text-xs font-semibold hover:bg-black cursor-pointer shadow-md"
+                >
+                  保存修改
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       )}

@@ -15,7 +15,8 @@ export const initialScenes: Scene[] = [
     category: "办公室",
     temperature: 22,
     feel: "偏冷",
-    isPreset: true
+    isPreset: true,
+    remark: ""
   },
   {
     id: "scene-home",
@@ -23,7 +24,8 @@ export const initialScenes: Scene[] = [
     category: "家",
     temperature: 24,
     feel: "舒适",
-    isPreset: true
+    isPreset: true,
+    remark: ""
   },
   {
     id: "scene-metro",
@@ -31,7 +33,8 @@ export const initialScenes: Scene[] = [
     category: "地铁通勤",
     temperature: 26,
     feel: "闷热",
-    isPreset: true
+    isPreset: true,
+    remark: "高频活动"
   },
   {
     id: "scene-mall",
@@ -39,7 +42,8 @@ export const initialScenes: Scene[] = [
     category: "商场",
     temperature: 21,
     feel: "微凉",
-    isPreset: true
+    isPreset: true,
+    remark: ""
   }
 ];
 
@@ -73,35 +77,35 @@ export const initialClothing: Clothing[] = [
     name: "蓝色条纹衬衫",
     category: "上衣",
     color: "蓝色",
-    image: "/input_file_0.png"
+    image: "https://images.unsplash.com/photo-1603252109303-2751441dd157?w=400&auto=format&fit=crop&q=80"
   },
   {
     id: "cloth-2",
     name: "史努比短袖",
     category: "上衣",
     color: "白色",
-    image: "/input_file_4.png"
+    image: "https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?w=400&auto=format&fit=crop&q=80"
   },
   {
     id: "cloth-3",
     name: "军绿色短裤",
     category: "下装",
     color: "绿色",
-    image: "/input_file_3.png"
+    image: "https://images.unsplash.com/photo-1591195853828-11db59a44f6b?w=400&auto=format&fit=crop&q=80"
   },
   {
     id: "cloth-4",
     name: "牛仔长裤",
     category: "下装",
     color: "蓝色",
-    image: "/input_file_2.png"
+    image: "https://images.unsplash.com/photo-1541099649105-f69ad21f3246?w=400&auto=format&fit=crop&q=80"
   },
   {
     id: "cloth-5",
     name: "白色运动鞋",
     category: "鞋履",
     color: "白色",
-    image: "/input_file_1.png"
+    image: "https://images.unsplash.com/photo-1608231387042-66d1773070a5?w=400&auto=format&fit=crop&q=80"
   },
   {
     id: "cloth-6",
@@ -115,7 +119,7 @@ export const initialClothing: Clothing[] = [
     name: "卡其休闲短裤",
     category: "下装",
     color: "卡其色",
-    image: "/input_file_5.png"
+    image: "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=400&auto=format&fit=crop&q=80"
   },
   {
     id: "cloth-8",
@@ -136,7 +140,7 @@ export const initialClothing: Clothing[] = [
     name: "卡其色风衣",
     category: "上衣",
     color: "卡其色",
-    image: "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=400&auto=format&fit=crop&q=80"
+    image: "https://images.unsplash.com/photo-1544022613-e87ca75a784a?w=400&auto=format&fit=crop&q=80"
   },
   {
     id: "cloth-11",

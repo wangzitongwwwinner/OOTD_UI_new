@@ -25,7 +25,19 @@ export default function App() {
 
   const [scenes, setScenes] = useState<Scene[]>(() => {
     const saved = localStorage.getItem("ut_scenes");
-    return saved ? JSON.parse(saved) : initialScenes;
+    if (saved) {
+      const parsed = JSON.parse(saved) as Scene[];
+      return parsed.map((s) => {
+        if (s.remark === undefined) {
+          return {
+            ...s,
+            remark: s.category === "地铁通勤" && s.id === "scene-metro" ? "高频活动" : "",
+          };
+        }
+        return s;
+      });
+    }
+    return initialScenes;
   });
 
   const [itineraries, setItineraries] = useState<ItineraryItem[]>(() => {
@@ -38,7 +50,7 @@ export default function App() {
     const list = saved ? JSON.parse(saved) : initialClothing;
     return list.map((item: Clothing) => {
       const match = initialClothing.find((c) => c.id === item.id);
-      if (match && match.image.startsWith("/input_file_")) {
+      if (match && (match.image.startsWith("/input_file_") || item.image.startsWith("/input_file_"))) {
         return { ...item, image: match.image, name: match.name, color: match.color };
       }
       return item;
@@ -156,6 +168,10 @@ export default function App() {
     }
   };
 
+  const handleUpdateClothing = (updatedItem: Clothing) => {
+    setClothingList(clothingList.map((c) => (c.id === updatedItem.id ? updatedItem : c)));
+  };
+
   // Saved Outfits handlers
   const handleSaveOutfit = (newOutfit: SavedOutfit) => {
     setSavedOutfits([newOutfit, ...savedOutfits]);
@@ -214,6 +230,7 @@ export default function App() {
             clothingList={clothingList}
             onAddClothing={handleAddClothing}
             onDeleteClothing={handleDeleteClothing}
+            onUpdateClothing={handleUpdateClothing}
           />
         )}
 
